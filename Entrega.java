@@ -276,7 +276,28 @@ class Entrega {
      * Pista: Cercau informació sobre els nombres de Stirling.
      */
     static int exercici1(int[] a) {
-      throw new UnsupportedOperationException("pendent");
+      // S(n,k) = k·S(n-1,k) + S(n-1,k-1)
+      // Posibles particions = S(n,n) + S(n,n-1) + S(n,n-2) ... +S(n,1) +S(n,0)
+      // S(n,0)=0
+      // S(n,1)=1
+      // S(n,n)=1
+      int n = a.length;
+      int res = 0;
+      for (int i = n; i > 0; i--) {
+        res += nStirling(n, i);
+      }
+      return res;
+    }
+
+    /*
+     * Metode que calcula el nombre de particions de un conjunt de n elements en conjunts de k elements
+     */
+    static int nStirling(int n, int k) {
+      if (k == 1 || k == n) {
+        return 1;
+      } else {
+        return k * nStirling(n - 1, k) + nStirling(n - 1, k - 1);
+      }
     }
 
     /*
