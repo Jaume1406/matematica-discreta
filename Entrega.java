@@ -80,7 +80,129 @@ class Entrega {
     static final char NAND = '.';
 
     static int exercici1(char[] ops, int[] vars) {
-      throw new UnsupportedOperationException("pendent");
+      // Sercam el nombre de variables diferents cercant el maxim a la llista
+      int nVars = 0;
+      for (int i : vars) {
+        if (i > nVars)
+          nVars = i;
+      }
+      nVars++;
+      // Generam les combinacions de les variables com si fos una taula de veritat
+      int[][] combinacions = new int[nVars][((int) Math.pow(2, nVars))];
+      int contador;
+      int value;
+      for (int i = 0; i < combinacions.length; i++) {
+        contador = 0;
+        value = 0;
+        for (int val : combinacions[i]) {
+          if (contador == Math.pow(2, i)) {
+            value = ((value + 1) % 2);
+            contador = 0;
+          }
+          val = value;
+          contador++;
+        }
+
+      }
+      // feim les operacions
+      int[] res = combinacions[vars[0]];
+      contador = 1;
+      for (char i : ops) {
+        switch (i) {
+          case CONJ -> {
+            res = conjuncio(res, combinacions[vars[contador]]);
+          }
+          case DISJ -> {
+            res = disjuncio(res, combinacions[vars[contador]]);
+          }
+          case IMPL -> {
+            res = implicacio(res, combinacions[vars[contador]]);
+          }
+          case NAND -> {
+            res = nand(res, combinacions[vars[contador]]);
+          }
+        }
+        contador++;
+      }
+      // ara tenim a res el resultat de la taula de veritat
+      boolean tautologia = true;
+      boolean contradiccio = true;
+      for (int i : res) {
+        if (contradiccio && i == 1) {
+          contradiccio = false;
+        } else if (tautologia && i == 0) {
+          tautologia = false;
+        } else {
+          break;
+        }
+      }
+      if (tautologia) {
+        return 1;
+      } else if (contradiccio) {
+        return 0;
+      } else {
+        return -1;
+      }
+    }
+
+    /*
+     * Aquest metode realitza la operació AND amb dues cadenes de bits
+     */
+    static int[] conjuncio(int[] var1, int[] var2) {
+      int[] res = new int[var1.length];
+      for (int i = 0; i < Math.min(var1.length, var2.length); i++) {
+        if (var1[i] == 1 && var2[i] == 1) {
+          res[i] = 1;
+        } else {
+          res[i] = 0;
+        }
+      }
+      return res;
+    }
+
+    /*
+     * Aquest metode realitza la operació OR amb dues cadenes de bits
+     */
+    static int[] disjuncio(int[] var1, int[] var2) {
+      int[] res = new int[var1.length];
+      for (int i = 0; i < Math.min(var1.length, var2.length); i++) {
+        if (var1[i] == 1 || var2[i] == 1) {
+          res[i] = 1;
+        } else {
+          res[i] = 0;
+        }
+      }
+      return res;
+    }
+
+    /*
+     * Aquest metode realitza la operació IMPL amb dues cadenes de bits
+     */
+    static int[] implicacio(int[] var1, int[] var2) {
+      int[] res = new int[var1.length];
+      for (int i = 0; i < Math.min(var1.length, var2.length); i++) {
+        if (var1[i] == 1 && var2[i] == 0) {
+          res[i] = 0;
+        } else {
+          res[i] = 1;
+        }
+      }
+      return res;
+    }
+
+    /*
+     * Aquest metode realitza la operació NAND amb dues cadenes de bits
+     */
+    static int[] nand(int[] var1, int[] var2) {
+      int[] res = new int[var1.length];
+      for (int i = 0; i < Math.min(var1.length, var2.length); i++) {
+        if (var1[i] == 1 && var2[i] == 1) {
+          res[i] = 0;
+        } else {
+          res[i] = 1;
+        }
+      }
+      return res;
     }
 
     /*
