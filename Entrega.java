@@ -216,7 +216,13 @@ class Entrega {
      * (∀x : P(x)) <-> (∃!x : Q(x))
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
-      throw new UnsupportedOperationException("pendent");
+      int elementsP = 0;
+      int elementsQ  = 0;
+      for (int i : universe) {
+        if (p.test(i))elementsP++;
+        if (q.test(i))elementsQ++;
+      }
+      return (elementsP==universe.length)==(elementsQ==1);
     }
 
     static void tests() {
