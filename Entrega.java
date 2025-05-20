@@ -308,7 +308,44 @@ class Entrega {
      * Si no existeix, retornau -1.
      */
     static int exercici2(int[] a, int[][] rel) {
-      throw new UnsupportedOperationException("pendent");
+      // inicialitzam una matriu d'adjacencia amb totes les posicions a false
+      boolean[][] matAdjecencia = new boolean[a.length][a.length];
+      // posam a true matriu[i][j] en base a les relacions iRj en rel
+      for (int[] r : rel) {
+        matAdjecencia[r[0] - a[0]][r[1] - a[0]] = true;
+      }
+      // Aplicam l'algoritme Floid-Warsall per obtenir la clausura transitiva
+      for (int i = 0; i < matAdjecencia.length; i++) {
+        for (int j = 0; j < matAdjecencia.length; j++) {
+          for (int k = 0; k < matAdjecencia.length; k++) {
+            if (matAdjecencia[i][j] && matAdjecencia[j][k]) {
+              matAdjecencia[i][k] = true;
+            }
+          }
+        }
+      }
+      // Posam les diagonals de la matriu per complir la reflexivitat
+      for (int i = 0; i < matAdjecencia.length; i++) {
+        matAdjecencia[i][i] = true;
+      }
+      // comprovam que no hi hagi simetria en relacions nRm on n!=m
+      for (int i = 1; i < matAdjecencia.length; i++) {
+        for (int j = 0; j < i; j++) {
+          if (matAdjecencia[i][j] && matAdjecencia[j][i]) {
+            return -1;
+          }
+        }
+      }
+      // La matriu es valida, contam el nombre de relacions
+      int cardinal = 0;
+      for (boolean[] fila : matAdjecencia) {
+        for (boolean columna : fila) {
+          if (columna) {
+            cardinal++;
+          }
+        }
+      }
+      return cardinal;
     }
 
     /*
