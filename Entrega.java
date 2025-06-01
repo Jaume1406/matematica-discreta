@@ -444,7 +444,28 @@ class Entrega {
      * Determinau si el graf `g` (no dirigit) té cicles.
      */
     static boolean exercici1(int[][] g) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[] explorats = new boolean[g.length];
+      for (int i = 0 ;i<g.length;i++){
+        if (exploreExercici1(g,i,explorats,i)){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    static boolean exploreExercici1(int[][] g,int v,boolean[]explorats,int anterior){
+      if (explorats[v]){
+        return true; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+      }
+      explorats[v]=true;
+      for (int vNext : g[v]){
+        if (vNext!=anterior){
+          if(exploreExercici1(g, vNext, explorats, v)){
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     /*
@@ -452,7 +473,29 @@ class Entrega {
      * 10.
      */
     static boolean exercici2(int[][] g1, int[][] g2) {
-      throw new UnsupportedOperationException("pendent");
+      if (g1.length!=g2.length){ //Si no tenen el mateix nombre de vertexos no poden ser isomorfs
+        return false;
+      }
+      //Cream llistes dels graus dels vertexos 
+      int[] grausG1 = new int[g1.length];
+      for (int i = 0;i<g1.length;i++){
+        grausG1[i] = g1[i].length;
+      }
+      int[] grausG2 = new int[g2.length];
+      for (int i = 0;i<g2.length;i++){
+        grausG2[i] = g2[i].length;
+      }
+      //Els ordenam
+      Arrays.sort(grausG1);
+      Arrays.sort(grausG2);
+      //Comprovam que siguin iguals
+      if (Arrays.equals(grausG1,grausG2)){
+        return true;
+      }else{
+        return false;
+      }
+
+      
     }
 
     /*
@@ -463,7 +506,35 @@ class Entrega {
      * vèrtex.
      */
     static int[] exercici3(int[][] g, int r) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[] explorats = new boolean[g.length];
+      int indx=0;
+      List<Integer> postOrdre = new ArrayList<Integer>();
+      if(!exploreExercici3(g, r, r, explorats,postOrdre)){
+        return null;
+      }else{
+        //Ficam els elements de la llista postOrdre dins un int[]
+        int[] res = new int[g.length];
+        for (int i = 0;i<postOrdre.size();i++){
+          res[i] = postOrdre.get(i);
+        }
+        return res;
+      }
+    }
+
+    static boolean exploreExercici3(int[][] g,int v,int anterior,boolean[]explorats,List<Integer> postordre){
+      if (explorats[v]){
+        return false; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+      }
+      explorats[v]=true;
+      for (int vNext : g[v]){
+        if (vNext!=anterior){
+          if(!exploreExercici3(g, vNext,v, explorats,postordre)){
+            return false; //Ha trobat un cicle en la seva recursivitat
+          }
+        }
+      }
+      postordre.add(v);
+      return true; //No te cicles
     }
 
     /*
