@@ -356,7 +356,47 @@ class Entrega {
      * - null en qualsevol altre cas
      */
     static Integer exercici3(int[] a, int[][] rel, int[] x, boolean op) {
-      throw new UnsupportedOperationException("pendent");
+      Integer res = null;
+      boolean valid= true;
+      if (op) {
+        // Cercam el suprem
+        for (int[] r : rel) {
+          if (x[0]==r[0]) {
+            //Significa que existeix {x[0],r[1]} a la relació
+            for (int i = 1;valid &&i<x.length;i++){
+              valid = false;
+              //Comprovam la existencia de {x[i],r[1]} a la relació per totes les x
+              for(int j = 0;!valid && j<rel.length;j++){
+                if (rel[j][0]==x[i] && rel[j][1] == r[1]){
+                  valid=true;
+                }
+              }
+            }
+            if (valid){
+              res = r[1];
+              break; //Sortim del bucle perque al estar ordenades les relacions el suprem sera el primer en apareixer que compli la condició
+            }
+          }
+        }
+      } else {
+        // Cercam l'infim
+        for (int[] r : rel) {
+          if (r[1] == x[0]) {
+            //Significa que existeix {r[0],x[0]} a la relació
+            for (int i = 1;valid &&i<x.length;i++){
+              valid = false;
+              //Comprovam la existencia de {r[0],x[i]} a la relació per totes les x
+              for(int j = 0;!valid && j<rel.length;j++){
+                if (rel[j][0]==r[0] && rel[j][1] == x[i]){
+                  valid=true;
+                }
+              }
+            }
+            if (valid) res = r[0]; //Seguim a la repetició perque al estar ordenades les relacions el infim sera el darrer element en complir les condicións
+          }
+        }
+      }
+      return res;
     }
 
     /*
@@ -367,7 +407,53 @@ class Entrega {
      *  - Sinó, null.
      */
     static int[][] exercici4(int[] a, int[] b, Function<Integer, Integer> f) {
-      throw new UnsupportedOperationException("pendent");
+      int[][]graf = new int[a.length][2];
+      for (int i = 0; i<a.length;i++){
+        graf[i] = new int[]{f.apply(a[i]),a[i]};
+      }
+      return graf;
+
+      /* 
+      boolean injectiva = true;
+      boolean sobrejectiva = true;
+      // Hem de comprobar si la funció es bijectiva, injectiva o sobrejectiva
+      List<int[]> rel = new ArrayList<int[]>();
+      for (int n : a) {
+        rel.add(new int[] { n, f.apply(n) });
+      }
+
+      if (a.length > b.length)
+        injectiva = false; // Si a es mes gran que b forçosament elements de a compartiran imatge
+
+      // Comprovam si es injectiva
+      for (int i = 0; injectiva && i < rel.size() - 1; i++) {
+        for (int j = i + 1; injectiva && j < rel.size(); j++) {
+          if (rel.get(i)[1] == rel.get(j)[1]) {
+            injectiva = false;
+          }
+        }
+      }
+
+      if (!(injectiva && a.length == b.length)) {//si el tamany de a i b son el mateix i la funció es injectiva, podem confirmar que es tambe sobrejectiva
+        //Comprobam si es sobrejectiva
+        if (b.length > a.length) { // Si b es major que a no tots els elements de b poden tenir antiimatge
+          sobrejectiva = false;
+        } else {
+          //Per cada element n de b comprovam si existeix element de a tq f(a) = n
+          for (int n : b) {
+            boolean trobat = false;
+            for (int i = 0; !trobat && i < rel.size() - 1; i++) {
+              if (rel.get(i)[1] == n) {
+                trobat = true;
+              }
+            }
+            if (!trobat) { // no ha trobat cap cami f(a) = n tq n pertany a b
+              sobrejectiva = false;
+              break;
+            }
+          }
+        }
+      }*/
     }
 
     /*
