@@ -510,8 +510,14 @@ class Entrega {
       int indx=0;
       List<Integer> postOrdre = new ArrayList<Integer>();
       if(!exploreExercici3(g, r, r, explorats,postOrdre)){
-        return null;
+        return null; //El graf te cicles, no es un abre
       }else{
+        //Comprovam que el graf sigui connex, tots els vertexos han de estar explorats
+        for (boolean explorat:explorats){
+          if(!explorat){
+            return null;
+          }
+        } 
         //Ficam els elements de la llista postOrdre dins un int[]
         int[] res = new int[g.length];
         for (int i = 0;i<postOrdre.size();i++){
