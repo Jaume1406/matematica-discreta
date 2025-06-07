@@ -275,7 +275,28 @@ class Entrega {
      * Pista: Cercau informació sobre els nombres de Stirling.
      */
     static int exercici1(int[] a) {
-      throw new UnsupportedOperationException("pendent");
+      // S(n,k) = k·S(n-1,k) + S(n-1,k-1)
+      // Posibles particions = S(n,n) + S(n,n-1) + S(n,n-2) ... +S(n,1) +S(n,0)
+      // S(n,0)=0
+      // S(n,1)=1
+      // S(n,n)=1
+      int n = a.length;
+      int res = 0;
+      for (int i = n; i > 0; i--) {
+        res += nStirling(n, i);
+      }
+      return res;
+    }
+
+    /*
+     * Metode que calcula el nombre de particions de un conjunt de n elements en conjunts de k elements
+     */
+    static int nStirling(int n, int k) {
+      if (k == 1 || k == n) {
+        return 1;
+      } else {
+        return k * nStirling(n - 1, k) + nStirling(n - 1, k - 1);
+      }
     }
 
     /*
@@ -286,7 +307,44 @@ class Entrega {
      * Si no existeix, retornau -1.
      */
     static int exercici2(int[] a, int[][] rel) {
-      throw new UnsupportedOperationException("pendent");
+      // inicialitzam una matriu d'adjacencia amb totes les posicions a false
+      boolean[][] matAdjecencia = new boolean[a.length][a.length];
+      // posam a true matriu[i][j] en base a les relacions iRj en rel
+      for (int[] r : rel) {
+        matAdjecencia[r[0] - a[0]][r[1] - a[0]] = true;
+      }
+      // Aplicam l'algoritme Floid-Warsall per obtenir la clausura transitiva
+      for (int i = 0; i < matAdjecencia.length; i++) {
+        for (int j = 0; j < matAdjecencia.length; j++) {
+          for (int k = 0; k < matAdjecencia.length; k++) {
+            if (matAdjecencia[i][j] && matAdjecencia[j][k]) {
+              matAdjecencia[i][k] = true;
+            }
+          }
+        }
+      }
+      // Posam les diagonals de la matriu per complir la reflexivitat
+      for (int i = 0; i < matAdjecencia.length; i++) {
+        matAdjecencia[i][i] = true;
+      }
+      // comprovam que no hi hagi simetria en relacions nRm on n!=m
+      for (int i = 1; i < matAdjecencia.length; i++) {
+        for (int j = 0; j < i; j++) {
+          if (matAdjecencia[i][j] && matAdjecencia[j][i]) {
+            return -1;
+          }
+        }
+      }
+      // La matriu es valida, contam el nombre de relacions
+      int cardinal = 0;
+      for (boolean[] fila : matAdjecencia) {
+        for (boolean columna : fila) {
+          if (columna) {
+            cardinal++;
+          }
+        }
+      }
+      return cardinal;
     }
 
     /*
@@ -297,7 +355,47 @@ class Entrega {
      * - null en qualsevol altre cas
      */
     static Integer exercici3(int[] a, int[][] rel, int[] x, boolean op) {
-      throw new UnsupportedOperationException("pendent");
+      Integer res = null;
+      boolean valid= true;
+      if (op) {
+        // Cercam el suprem
+        for (int[] r : rel) {
+          if (x[0]==r[0]) {
+            //Significa que existeix {x[0],r[1]} a la relació
+            for (int i = 1;valid &&i<x.length;i++){
+              valid = false;
+              //Comprovam la existencia de {x[i],r[1]} a la relació per totes les x
+              for(int j = 0;!valid && j<rel.length;j++){
+                if (rel[j][0]==x[i] && rel[j][1] == r[1]){
+                  valid=true;
+                }
+              }
+            }
+            if (valid){
+              res = r[1];
+              break; //Sortim del bucle perque al estar ordenades les relacions el suprem sera el primer en apareixer que compli la condició
+            }
+          }
+        }
+      } else {
+        // Cercam l'infim
+        for (int[] r : rel) {
+          if (r[1] == x[0]) {
+            //Significa que existeix {r[0],x[0]} a la relació
+            for (int i = 1;valid &&i<x.length;i++){
+              valid = false;
+              //Comprovam la existencia de {r[0],x[i]} a la relació per totes les x
+              for(int j = 0;!valid && j<rel.length;j++){
+                if (rel[j][0]==r[0] && rel[j][1] == x[i]){
+                  valid=true;
+                }
+              }
+            }
+            if (valid) res = r[0]; //Seguim a la repetició perque al estar ordenades les relacions el infim sera el darrer element en complir les condicións
+          }
+        }
+      }
+      return res;
     }
 
     /*
@@ -308,7 +406,65 @@ class Entrega {
      *  - Sinó, null.
      */
     static int[][] exercici4(int[] a, int[] b, Function<Integer, Integer> f) {
-      throw new UnsupportedOperationException("pendent");
+      boolean injectiva, sobrejectiva;
+      injectiva = sobrejectiva = true;
+
+      if (a.length < b.length) {
+        sobrejectiva = false;
+      } else if (b.length < a.length) {
+        injectiva = false;
+      }
+
+      if (injectiva) { // Comprovam la injectivitat
+        for (int i = 0; injectiva && i < a.length; i++) {
+          for (int j = i + 1; injectiva && j < a.length; j++) {
+            if (f.apply(a[i]) == f.apply(a[j])) {
+              injectiva = false;
+            }
+          }
+        }
+      }
+      boolean trobat;
+      if (sobrejectiva) { // Comprovam si realment es sobrejectiva
+        for (int e : b) {
+          trobat = false;
+          for (int v : a) {
+            if (f.apply(v) == e) {
+              trobat = true;
+              break;
+            }
+          }
+          if (!trobat) {
+            sobrejectiva = false;
+            break;
+          }
+        }
+      }
+
+      if (!injectiva && !sobrejectiva) {
+        return null;
+      }
+
+      // El seguent algoritme forme les inverses independenment siguin isomorfs, per
+      // la esquerra o dreta
+      int[][] graf = new int[b.length][2];
+
+      int index = -1;
+      for (int e : b) {
+        trobat = false;
+        index++;
+        for (int v : a) {
+          if (f.apply(v) == e) {
+            graf[index] = new int[] { e, v };
+            trobat = true;
+            break;
+          }
+        }
+        if (!trobat) {
+          graf[index] = graf[index - 1];
+        }
+      }
+      return graf;
     }
 
     /*
