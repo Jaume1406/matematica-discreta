@@ -727,9 +727,29 @@ class Entrega {
      * Pista: https://en.wikipedia.org/wiki/Exponentiation_by_squaring
      */
     static int[] exercici1(String msg, int n, int e) {
-      throw new UnsupportedOperationException("pendent");
+      byte[] seq = msg.getBytes();
+      int[] cod = new int[msg.length()/2];
+      for (int i = 0;i<cod.length;i++){
+        cod[i] = (int) seq[i*2]*128;
+        cod[i] += (int) seq[(i*2)+1];
+      }
+      for (int i=0;i<cod.length;i++){
+        cod[i] = mod_exp_by_squaring(cod[i], e, n);
+      }
+      return cod;
     }
 
+    //Métode que eleva passa per pasa a l'exponent evitant overflow mitjançant moduls intermitjos
+    static int mod_exp_by_squaring(int x, int n, int mod) {
+        if (n==0){
+          return 1;
+        }else if (n%2==0){
+          return mod_exp_by_squaring((x*x)%mod, n/2, mod);
+        }else{
+          return (x*mod_exp_by_squaring((x*x)%mod, (n-1)/2, mod))%mod;
+        }
+    }
+    
     /*
      * Primer, desencriptau el missatge utilitzant xifrat RSA amb la clau pública donada. Després
      * descodificau el missatge en blocs de longitud 2 amb codificació ASCII (igual que l'exercici
