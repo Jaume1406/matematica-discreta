@@ -407,53 +407,65 @@ class Entrega {
      *  - Sinó, null.
      */
     static int[][] exercici4(int[] a, int[] b, Function<Integer, Integer> f) {
-      int[][]graf = new int[a.length][2];
-      for (int i = 0; i<a.length;i++){
-        graf[i] = new int[]{f.apply(a[i]),a[i]};
-      }
-      return graf;
+      boolean injectiva, sobrejectiva;
+      injectiva = sobrejectiva = true;
 
-      /* 
-      boolean injectiva = true;
-      boolean sobrejectiva = true;
-      // Hem de comprobar si la funció es bijectiva, injectiva o sobrejectiva
-      List<int[]> rel = new ArrayList<int[]>();
-      for (int n : a) {
-        rel.add(new int[] { n, f.apply(n) });
+      if (a.length < b.length) {
+        sobrejectiva = false;
+      } else if (b.length < a.length) {
+        injectiva = false;
       }
 
-      if (a.length > b.length)
-        injectiva = false; // Si a es mes gran que b forçosament elements de a compartiran imatge
-
-      // Comprovam si es injectiva
-      for (int i = 0; injectiva && i < rel.size() - 1; i++) {
-        for (int j = i + 1; injectiva && j < rel.size(); j++) {
-          if (rel.get(i)[1] == rel.get(j)[1]) {
-            injectiva = false;
+      if (injectiva) { // Comprovam la injectivitat
+        for (int i = 0; injectiva && i < a.length; i++) {
+          for (int j = i + 1; injectiva && j < a.length; j++) {
+            if (f.apply(a[i]) == f.apply(a[j])) {
+              injectiva = false;
+            }
           }
         }
       }
-
-      if (!(injectiva && a.length == b.length)) {//si el tamany de a i b son el mateix i la funció es injectiva, podem confirmar que es tambe sobrejectiva
-        //Comprobam si es sobrejectiva
-        if (b.length > a.length) { // Si b es major que a no tots els elements de b poden tenir antiimatge
-          sobrejectiva = false;
-        } else {
-          //Per cada element n de b comprovam si existeix element de a tq f(a) = n
-          for (int n : b) {
-            boolean trobat = false;
-            for (int i = 0; !trobat && i < rel.size() - 1; i++) {
-              if (rel.get(i)[1] == n) {
-                trobat = true;
-              }
-            }
-            if (!trobat) { // no ha trobat cap cami f(a) = n tq n pertany a b
-              sobrejectiva = false;
+      boolean trobat;
+      if (sobrejectiva) { // Comprovam si realment es sobrejectiva
+        for (int e : b) {
+          trobat = false;
+          for (int v : a) {
+            if (f.apply(v) == e) {
+              trobat = true;
               break;
             }
           }
+          if (!trobat) {
+            sobrejectiva = false;
+            break;
+          }
         }
-      }*/
+      }
+
+      if (!injectiva && !sobrejectiva) {
+        return null;
+      }
+
+      // El seguent algoritme forme les inverses independenment siguin isomorfs, per
+      // la esquerra o dreta
+      int[][] graf = new int[b.length][2];
+
+      int index = -1;
+      for (int e : b) {
+        trobat = false;
+        index++;
+        for (int v : a) {
+          if (f.apply(v) == e) {
+            graf[index] = new int[] { e, v };
+            trobat = true;
+            break;
+          }
+        }
+        if (!trobat) {
+          graf[index] = graf[index - 1];
+        }
+      }
+      return graf;
     }
 
     /*
