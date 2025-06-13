@@ -93,12 +93,12 @@ class Entrega {
       for (int i = 0; i < combinacions.length; i++) {
         contador = 0;
         value = 0;
-        for (int val : combinacions[i]) {
+        for (int j=0 ;j<combinacions[i].length;j++) {
           if (contador == Math.pow(2, i)) {
             value = ((value + 1) % 2);
             contador = 0;
           }
-          val = value;
+          combinacions[i][j] = value;
           contador++;
         }
 
@@ -490,12 +490,57 @@ class Entrega {
       Arrays.sort(grausG2);
       //Comprovam que siguin iguals
       if (Arrays.equals(grausG1,grausG2)){
-        return true;
+        //Aplicam totes les posibles permutacions i comprovam si aplicant qualque a g1 formam g2
+        int[] perm= new int[g1.length];
+        for (int i = 0;i<perm.length;i++){
+          perm[i]=i;
+        }
+        return comprovarPermutacions(perm,0,g1,g2);
       }else{
         return false;
       }
+    }
 
-      
+    //Métode que aplicant permutacions tal que renombram els nodes de g1 miram si amb qualquna transformacio obtenim g2
+    static boolean comprovarPermutacions(int[] perm,int indx,int[][]g1,int[][]g2){
+      if (indx == perm.length-1){ //Permutació completa
+        //Comprovam si aplicant la permutacio obtinguda a g1 obtenim g2
+        int[][] fg1 = new int[g1.length][];
+        for (int i = 0;i<g1.length;i++){//Cream una copia per no modificar g1
+          fg1[perm[i]]=g1[i].clone();
+        }
+        //Canviam els veinats dels nodes segons perm
+        for (int i = 0;i<fg1.length;i++){
+          for (int j = 0;j<fg1[i].length;j++){
+            fg1[i][j] = perm[fg1[i][j]];
+          }
+          Arrays.sort(fg1[i]);
+        }
+        //Comprovam que ambdues llistes d'adjacencia siguin iguals
+        for (int i= 0;i<fg1.length;i++){
+          if (!Arrays.equals(fg1[i],g2[i])){
+            return false;
+          }
+        }
+        return true;
+      }else{  
+        //Seguim generant les permutacions per backtracking
+        int aux;
+        for (int i = indx;i<perm.length;i++){
+          //Feim un swap
+          aux = perm[indx];
+          perm[indx]=perm[i];
+          perm[i]=aux;
+          if(comprovarPermutacions(perm,indx+1,g1,g2)){
+            return true; //N'ha trobada una permutacio tal que f(g1) = g2
+          }
+          //Desfem el canvi
+          aux = perm[indx];
+          perm[indx]=perm[i];
+          perm[i]=aux;
+        }
+        return false;
+      }
     }
 
     /*
@@ -507,7 +552,6 @@ class Entrega {
      */
     static int[] exercici3(int[][] g, int r) {
       boolean[] explorats = new boolean[g.length];
-      int indx=0;
       List<Integer> postOrdre = new ArrayList<Integer>();
       if(!exploreExercici3(g, r, r, explorats,postOrdre)){
         return null; //El graf te cicles, no es un abre
