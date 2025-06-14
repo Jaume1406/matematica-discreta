@@ -612,7 +612,49 @@ class Entrega {
      * Si és impossible, retornau -1.
      */
     static int exercici4(char[][] mapa) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[][] explorat = new boolean[mapa.length][mapa[0].length]; //Feim un array de booleans que marcara si una casella ja ha estat explorada per no repetir la cerca
+      List<int[]> aExplorar = new ArrayList<int[]>(); //Empream una arraylist que emprarem com a cua per aplicar la cerca BFS
+      //cercam la posicio d'origen
+      boolean trobat = false;
+      for (int fila = 0;!trobat && fila<mapa.length;fila++){
+        for(int columna = 0;!trobat && columna<mapa[0].length;columna++){
+          if (mapa[fila][columna]=='O'){
+            aExplorar.add(new int[]{fila,columna}); //Ficam l'origen, el primer node a explorar
+            explorat[fila][columna] = true;
+            trobat = true; //sortim del bucle
+          }
+        }
+      }
+      int pases = 0;
+      while (!aExplorar.isEmpty()){
+        int tam = aExplorar.size();
+        for (int i = 0;i<tam;i++){
+          int[]node = aExplorar.removeFirst(); //Feim el que seria un pop de una cua
+          if (mapa[node[0]][node[1]]=='D'){//Comprovam si trobam el desti
+            return pases; //Amb la cerca en amplada ens aseguram de que es troba amb el minim de pases
+          }
+
+          //Ficam els adjacents, comprovam que no s'hagin explorat abans, no siguin '#' ni surtin del mapa
+          if (node[0]!=mapa.length-1 && !explorat[node[0]+1][node[1]] &&mapa[node[0]+1][node[1]]!='#'){ //Miram el de abaix
+            explorat[node[0]+1][node[1]] = true;
+            aExplorar.add(new int[]{node[0]+1,node[1]});
+          }
+          if (node[0]!=0 && !explorat[node[0]-1][node[1]] && mapa[node[0]-1][node[1]]!='#'){ //Miram el de adalt
+            explorat[node[0]-1][node[1]] = true;
+            aExplorar.add(new int[]{node[0]-1,node[1]});
+          }
+          if (node[1]!=mapa[0].length-1 && !explorat[node[0]][node[1]+1] &&mapa[node[0]][node[1]+1]!='#'){ //Miram el de la dreta
+            explorat[node[0]][node[1]+1] = true;
+            aExplorar.add(new int[]{node[0],node[1]+1});
+          }
+          if (node[1]!=0 && !explorat[node[0]][node[1]-1] &&mapa[node[0]][node[1]-1]!='#'){ //Miram el de la esquerra
+            explorat[node[0]][node[1]-1] = true;
+            aExplorar.add(new int[]{node[0],node[1]-1});
+          }
+        }
+        pases++;
+      }
+      return -1;
     }
 
     /*
