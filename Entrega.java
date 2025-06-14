@@ -908,9 +908,30 @@ class Entrega {
      * Pista: https://en.wikipedia.org/wiki/Exponentiation_by_squaring
      */
     static int[] exercici1(String msg, int n, int e) {
-      throw new UnsupportedOperationException("pendent");
+      byte[] seq = msg.getBytes();
+      int[] cod = new int[msg.length() / 2];
+      for (int i = 0; i < cod.length; i++) {
+        cod[i] = (int) seq[i * 2] * 128;
+        cod[i] += (int) seq[(i * 2) + 1];
+      }
+      for (int i = 0; i < cod.length; i++) {
+        cod[i] = mod_exp_by_squaring(cod[i], e, n);
+      }
+      return cod;
     }
 
+    // Métode que eleva passa per pasa a l'exponent evitant overflow mitjançant
+    // moduls intermitjos
+    static int mod_exp_by_squaring(int x, int n, int mod) {
+      if (n == 0) {
+        return 1;
+      } else if (n % 2 == 0) {
+        return mod_exp_by_squaring((x * x) % mod, n / 2, mod);
+      } else {
+        return (x * mod_exp_by_squaring((x * x) % mod, (n - 1) / 2, mod)) % mod;
+      }
+    }
+    
     /*
      * Primer, desencriptau el missatge utilitzant xifrat RSA amb la clau pública donada. Després
      * descodificau el missatge en blocs de longitud 2 amb codificació ASCII (igual que l'exercici
@@ -926,7 +947,54 @@ class Entrega {
      * - n és major que 2¹⁴, i n² és menor que Integer.MAX_VALUE
      */
     static String exercici2(int[] m, int n, int e) {
-      throw new UnsupportedOperationException("pendent");
+      int p = 2;
+      while (n % p != 0) { // Factoritzam n per aconseguir p i q
+        p++;
+      }
+      int q = n / p;
+      int phiEuler = (p - 1) * (q - 1);
+      // Aplicam la identitat de bezout amb e i la phi de Euler de n per aconseguir la
+      // inversa
+      int d = inversa(e, phiEuler);
+      // Elevam en d modul n cada bloc de codi
+      for (int i = 0; i < m.length; i++) {
+        m[i] = mod_exp_by_squaring(m[i], d, n); // empream el mateix metode que al exercici anterior per elevar nombres
+                                                // grossos
+      }
+      String res = "";
+      // Per cada bloc de codi extreim dos caracters
+      for (int i = 0; i < m.length; i++) {
+        int c0 = m[i] % 128; // Segon element del bloc
+        int c1 = ((m[i] - c0) / 128) % 128; // primer element del bloc
+        res += (char) c1;
+        res += (char) c0;
+      }
+      return res;
+    }
+
+    /*
+     * Metode que retorna la inversa de n modul mod, es necesari que n i mod siguin
+     * coprimers
+     */
+    static int inversa(int n, int mod) {
+      int modul = mod;
+      int x_ant = 1;
+      int x = 0;
+      int aux;
+      while (n % mod != 0) {
+        // Calculam la x seguent
+        aux = x_ant - n / mod * x;
+        x_ant = x;
+        x = aux;
+
+        // Obtenenim els valors de la seguent divisió
+        aux = mod;
+        mod = n % mod;
+        n = aux;
+      }
+      if (x < 0)
+        x = x + modul; // si es negatiu cercam el valor positiu de la classe
+      return x;
     }
 
     static void tests() {
