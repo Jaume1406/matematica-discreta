@@ -93,12 +93,12 @@ class Entrega {
       for (int i = 0; i < combinacions.length; i++) {
         contador = 0;
         value = 0;
-        for (int val : combinacions[i]) {
+        for (int j=0 ;j<combinacions[i].length;j++) {
           if (contador == Math.pow(2, i)) {
             value = ((value + 1) % 2);
             contador = 0;
           }
-          val = value;
+          combinacions[i][j] = value;
           contador++;
         }
 
@@ -600,7 +600,28 @@ class Entrega {
      * Determinau si el graf `g` (no dirigit) té cicles.
      */
     static boolean exercici1(int[][] g) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[] explorats = new boolean[g.length];
+      for (int i = 0 ;i<g.length;i++){
+        if (exploreExercici1(g,i,explorats,i)){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    static boolean exploreExercici1(int[][] g,int v,boolean[]explorats,int anterior){
+      if (explorats[v]){
+        return true; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+      }
+      explorats[v]=true;
+      for (int vNext : g[v]){
+        if (vNext!=anterior){
+          if(exploreExercici1(g, vNext, explorats, v)){
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     /*
@@ -608,7 +629,74 @@ class Entrega {
      * 10.
      */
     static boolean exercici2(int[][] g1, int[][] g2) {
-      throw new UnsupportedOperationException("pendent");
+      if (g1.length!=g2.length){ //Si no tenen el mateix nombre de vertexos no poden ser isomorfs
+        return false;
+      }
+      //Cream llistes dels graus dels vertexos 
+      int[] grausG1 = new int[g1.length];
+      for (int i = 0;i<g1.length;i++){
+        grausG1[i] = g1[i].length;
+      }
+      int[] grausG2 = new int[g2.length];
+      for (int i = 0;i<g2.length;i++){
+        grausG2[i] = g2[i].length;
+      }
+      //Els ordenam
+      Arrays.sort(grausG1);
+      Arrays.sort(grausG2);
+      //Comprovam que siguin iguals
+      if (Arrays.equals(grausG1,grausG2)){
+        //Aplicam totes les posibles permutacions i comprovam si aplicant qualque a g1 formam g2
+        int[] perm= new int[g1.length];
+        for (int i = 0;i<perm.length;i++){
+          perm[i]=i;
+        }
+        return comprovarPermutacions(perm,0,g1,g2);
+      }else{
+        return false;
+      }
+    }
+
+    //Métode que aplicant permutacions tal que renombram els nodes de g1 miram si amb qualquna transformacio obtenim g2
+    static boolean comprovarPermutacions(int[] perm,int indx,int[][]g1,int[][]g2){
+      if (indx == perm.length-1){ //Permutació completa
+        //Comprovam si aplicant la permutacio obtinguda a g1 obtenim g2
+        int[][] fg1 = new int[g1.length][];
+        for (int i = 0;i<g1.length;i++){//Cream una copia per no modificar g1
+          fg1[perm[i]]=g1[i].clone();
+        }
+        //Canviam els veinats dels nodes segons perm
+        for (int i = 0;i<fg1.length;i++){
+          for (int j = 0;j<fg1[i].length;j++){
+            fg1[i][j] = perm[fg1[i][j]];
+          }
+          Arrays.sort(fg1[i]);
+        }
+        //Comprovam que ambdues llistes d'adjacencia siguin iguals
+        for (int i= 0;i<fg1.length;i++){
+          if (!Arrays.equals(fg1[i],g2[i])){
+            return false;
+          }
+        }
+        return true;
+      }else{  
+        //Seguim generant les permutacions per backtracking
+        int aux;
+        for (int i = indx;i<perm.length;i++){
+          //Feim un swap
+          aux = perm[indx];
+          perm[indx]=perm[i];
+          perm[i]=aux;
+          if(comprovarPermutacions(perm,indx+1,g1,g2)){
+            return true; //N'ha trobada una permutacio tal que f(g1) = g2
+          }
+          //Desfem el canvi
+          aux = perm[indx];
+          perm[indx]=perm[i];
+          perm[i]=aux;
+        }
+        return false;
+      }
     }
 
     /*
@@ -619,7 +707,40 @@ class Entrega {
      * vèrtex.
      */
     static int[] exercici3(int[][] g, int r) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[] explorats = new boolean[g.length];
+      List<Integer> postOrdre = new ArrayList<Integer>();
+      if(!exploreExercici3(g, r, r, explorats,postOrdre)){
+        return null; //El graf te cicles, no es un abre
+      }else{
+        //Comprovam que el graf sigui connex, tots els vertexos han de estar explorats
+        for (boolean explorat:explorats){
+          if(!explorat){
+            return null;
+          }
+        } 
+        //Ficam els elements de la llista postOrdre dins un int[]
+        int[] res = new int[g.length];
+        for (int i = 0;i<postOrdre.size();i++){
+          res[i] = postOrdre.get(i);
+        }
+        return res;
+      }
+    }
+
+    static boolean exploreExercici3(int[][] g,int v,int anterior,boolean[]explorats,List<Integer> postordre){
+      if (explorats[v]){
+        return false; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+      }
+      explorats[v]=true;
+      for (int vNext : g[v]){
+        if (vNext!=anterior){
+          if(!exploreExercici3(g, vNext,v, explorats,postordre)){
+            return false; //Ha trobat un cicle en la seva recursivitat
+          }
+        }
+      }
+      postordre.add(v);
+      return true; //No te cicles
     }
 
     /*
@@ -647,7 +768,49 @@ class Entrega {
      * Si és impossible, retornau -1.
      */
     static int exercici4(char[][] mapa) {
-      throw new UnsupportedOperationException("pendent");
+      boolean[][] explorat = new boolean[mapa.length][mapa[0].length]; //Feim un array de booleans que marcara si una casella ja ha estat explorada per no repetir la cerca
+      List<int[]> aExplorar = new ArrayList<int[]>(); //Empream una arraylist que emprarem com a cua per aplicar la cerca BFS
+      //cercam la posicio d'origen
+      boolean trobat = false;
+      for (int fila = 0;!trobat && fila<mapa.length;fila++){
+        for(int columna = 0;!trobat && columna<mapa[0].length;columna++){
+          if (mapa[fila][columna]=='O'){
+            aExplorar.add(new int[]{fila,columna}); //Ficam l'origen, el primer node a explorar
+            explorat[fila][columna] = true;
+            trobat = true; //sortim del bucle
+          }
+        }
+      }
+      int pases = 0;
+      while (!aExplorar.isEmpty()){
+        int tam = aExplorar.size();
+        for (int i = 0;i<tam;i++){
+          int[]node = aExplorar.removeFirst(); //Feim el que seria un pop de una cua
+          if (mapa[node[0]][node[1]]=='D'){//Comprovam si trobam el desti
+            return pases; //Amb la cerca en amplada ens aseguram de que es troba amb el minim de pases
+          }
+
+          //Ficam els adjacents, comprovam que no s'hagin explorat abans, no siguin '#' ni surtin del mapa
+          if (node[0]!=mapa.length-1 && !explorat[node[0]+1][node[1]] &&mapa[node[0]+1][node[1]]!='#'){ //Miram el de abaix
+            explorat[node[0]+1][node[1]] = true;
+            aExplorar.add(new int[]{node[0]+1,node[1]});
+          }
+          if (node[0]!=0 && !explorat[node[0]-1][node[1]] && mapa[node[0]-1][node[1]]!='#'){ //Miram el de adalt
+            explorat[node[0]-1][node[1]] = true;
+            aExplorar.add(new int[]{node[0]-1,node[1]});
+          }
+          if (node[1]!=mapa[0].length-1 && !explorat[node[0]][node[1]+1] &&mapa[node[0]][node[1]+1]!='#'){ //Miram el de la dreta
+            explorat[node[0]][node[1]+1] = true;
+            aExplorar.add(new int[]{node[0],node[1]+1});
+          }
+          if (node[1]!=0 && !explorat[node[0]][node[1]-1] &&mapa[node[0]][node[1]-1]!='#'){ //Miram el de la esquerra
+            explorat[node[0]][node[1]-1] = true;
+            aExplorar.add(new int[]{node[0],node[1]-1});
+          }
+        }
+        pases++;
+      }
+      return -1;
     }
 
     /*
