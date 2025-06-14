@@ -79,7 +79,7 @@ class Entrega {
     static final char NAND = '.';
 
     static int exercici1(char[] ops, int[] vars) {
-      // Sercam el nombre de variables diferents cercant el maxim a la llista
+      // Cercam el nombre de variables diferents cercant el maxim a la llista
       int nVars = 0;
       for (int i : vars) {
         if (i > nVars)
@@ -93,7 +93,7 @@ class Entrega {
       for (int i = 0; i < combinacions.length; i++) {
         contador = 0;
         value = 0;
-        for (int j=0 ;j<combinacions[i].length;j++) {
+        for (int j = 0; j < combinacions[i].length; j++) {
           if (contador == Math.pow(2, i)) {
             value = ((value + 1) % 2);
             contador = 0;
@@ -216,12 +216,14 @@ class Entrega {
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, Predicate<Integer> q) {
       int elementsP = 0;
-      int elementsQ  = 0;
+      int elementsQ = 0;
       for (int i : universe) {
-        if (p.test(i))elementsP++;
-        if (q.test(i))elementsQ++;
+        if (p.test(i))
+          elementsP++;
+        if (q.test(i))
+          elementsQ++;
       }
-      return (elementsP==universe.length)==(elementsQ==1);
+      return (elementsP == universe.length) == (elementsQ == 1);
     }
 
     static void tests() {
@@ -289,7 +291,8 @@ class Entrega {
     }
 
     /*
-     * Metode que calcula el nombre de particions de un conjunt de n elements en conjunts de k elements
+     * Metode que calcula el nombre de particions de un conjunt de n elements en
+     * conjunts de k elements
      */
     static int nStirling(int n, int k) {
       if (k == 1 || k == n) {
@@ -356,24 +359,25 @@ class Entrega {
      */
     static Integer exercici3(int[] a, int[][] rel, int[] x, boolean op) {
       Integer res = null;
-      boolean valid= true;
+      boolean valid = true;
       if (op) {
         // Cercam el suprem
         for (int[] r : rel) {
-          if (x[0]==r[0]) {
-            //Significa que existeix {x[0],r[1]} a la relació
-            for (int i = 1;valid &&i<x.length;i++){
+          if (x[0] == r[0]) {
+            // Significa que existeix {x[0],r[1]} a la relació
+            for (int i = 1; valid && i < x.length; i++) {
               valid = false;
-              //Comprovam la existencia de {x[i],r[1]} a la relació per totes les x
-              for(int j = 0;!valid && j<rel.length;j++){
-                if (rel[j][0]==x[i] && rel[j][1] == r[1]){
-                  valid=true;
+              // Comprovam la existencia de {x[i],r[1]} a la relació per totes les x
+              for (int j = 0; !valid && j < rel.length; j++) {
+                if (rel[j][0] == x[i] && rel[j][1] == r[1]) {
+                  valid = true;
                 }
               }
             }
-            if (valid){
+            if (valid) {
               res = r[1];
-              break; //Sortim del bucle perque al estar ordenades les relacions el suprem sera el primer en apareixer que compli la condició
+              break; // Sortim del bucle perque al estar ordenades les relacions el suprem sera el
+                     // primer en apareixer que compli la condició
             }
           }
         }
@@ -381,17 +385,19 @@ class Entrega {
         // Cercam l'infim
         for (int[] r : rel) {
           if (r[1] == x[0]) {
-            //Significa que existeix {r[0],x[0]} a la relació
-            for (int i = 1;valid &&i<x.length;i++){
+            // Significa que existeix {r[0],x[0]} a la relació
+            for (int i = 1; valid && i < x.length; i++) {
               valid = false;
-              //Comprovam la existencia de {r[0],x[i]} a la relació per totes les x
-              for(int j = 0;!valid && j<rel.length;j++){
-                if (rel[j][0]==r[0] && rel[j][1] == x[i]){
-                  valid=true;
+              // Comprovam la existencia de {r[0],x[i]} a la relació per totes les x
+              for (int j = 0; !valid && j < rel.length; j++) {
+                if (rel[j][0] == r[0] && rel[j][1] == x[i]) {
+                  valid = true;
                 }
               }
             }
-            if (valid) res = r[0]; //Seguim a la repetició perque al estar ordenades les relacions el infim sera el darrer element en complir les condicións
+            if (valid)
+              res = r[0]; // Seguim a la repetició perque al estar ordenades les relacions el infim sera
+                          // el darrer element en complir les condicións
           }
         }
       }
@@ -601,22 +607,22 @@ class Entrega {
      */
     static boolean exercici1(int[][] g) {
       boolean[] explorats = new boolean[g.length];
-      for (int i = 0 ;i<g.length;i++){
-        if (exploreExercici1(g,i,explorats,i)){
+      for (int i = 0; i < g.length; i++) {
+        if (exploreExercici1(g, i, explorats, i)) {
           return true;
         }
       }
       return false;
     }
 
-    static boolean exploreExercici1(int[][] g,int v,boolean[]explorats,int anterior){
-      if (explorats[v]){
-        return true; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+    static boolean exploreExercici1(int[][] g, int v, boolean[] explorats, int anterior) {
+      if (explorats[v]) {
+        return true; // Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
       }
-      explorats[v]=true;
-      for (int vNext : g[v]){
-        if (vNext!=anterior){
-          if(exploreExercici1(g, vNext, explorats, v)){
+      explorats[v] = true;
+      for (int vNext : g[v]) {
+        if (vNext != anterior) {
+          if (exploreExercici1(g, vNext, explorats, v)) {
             return true;
           }
         }
@@ -629,71 +635,75 @@ class Entrega {
      * 10.
      */
     static boolean exercici2(int[][] g1, int[][] g2) {
-      if (g1.length!=g2.length){ //Si no tenen el mateix nombre de vertexos no poden ser isomorfs
+      if (g1.length != g2.length) { // Si no tenen el mateix nombre de vertexos no poden ser isomorfs
         return false;
       }
-      //Cream llistes dels graus dels vertexos 
+      // Cream llistes dels graus dels vertexos
       int[] grausG1 = new int[g1.length];
-      for (int i = 0;i<g1.length;i++){
+      for (int i = 0; i < g1.length; i++) {
         grausG1[i] = g1[i].length;
       }
       int[] grausG2 = new int[g2.length];
-      for (int i = 0;i<g2.length;i++){
+      for (int i = 0; i < g2.length; i++) {
         grausG2[i] = g2[i].length;
       }
-      //Els ordenam
+      // Els ordenam
       Arrays.sort(grausG1);
       Arrays.sort(grausG2);
-      //Comprovam que siguin iguals
-      if (Arrays.equals(grausG1,grausG2)){
-        //Aplicam totes les posibles permutacions i comprovam si aplicant qualque a g1 formam g2
-        int[] perm= new int[g1.length];
-        for (int i = 0;i<perm.length;i++){
-          perm[i]=i;
+      // Comprovam que siguin iguals
+      if (Arrays.equals(grausG1, grausG2)) {
+        // Aplicam totes les posibles permutacions i comprovam si aplicant qualque a g1
+        // formam g2
+        int[] perm = new int[g1.length];
+        for (int i = 0; i < perm.length; i++) {
+          perm[i] = i;
         }
-        return comprovarPermutacions(perm,0,g1,g2);
-      }else{
+        return comprovarPermutacions(perm, 0, g1, g2);
+      } else {
         return false;
       }
     }
 
-    //Métode que aplicant permutacions tal que renombram els nodes de g1 miram si amb qualquna transformacio obtenim g2
-    static boolean comprovarPermutacions(int[] perm,int indx,int[][]g1,int[][]g2){
-      if (indx == perm.length-1){ //Permutació completa
-        //Comprovam si aplicant la permutacio obtinguda a g1 obtenim g2
+    /*
+     * Métode que aplicant permutacions tal que renombram els nodes de g1 miram si
+     * amb qualquna transformacio obtenim g2
+     */
+    static boolean comprovarPermutacions(int[] perm, int indx, int[][] g1, int[][] g2) {
+      if (indx == perm.length - 1) { // Permutació completa
+        // Comprovam si aplicant la permutacio obtinguda a g1 obtenim g2
         int[][] fg1 = new int[g1.length][];
-        for (int i = 0;i<g1.length;i++){//Cream una copia per no modificar g1
-          fg1[perm[i]]=g1[i].clone();
+        for (int i = 0; i < g1.length; i++) {// Cream una copia per no modificar g1
+          fg1[perm[i]] = g1[i].clone();
         }
-        //Canviam els veinats dels nodes segons perm
-        for (int i = 0;i<fg1.length;i++){
-          for (int j = 0;j<fg1[i].length;j++){
+        // Canviam els veinats dels nodes segons perm
+        for (int i = 0; i < fg1.length; i++) {
+          for (int j = 0; j < fg1[i].length; j++) {
             fg1[i][j] = perm[fg1[i][j]];
           }
           Arrays.sort(fg1[i]);
         }
-        //Comprovam que ambdues llistes d'adjacencia siguin iguals
-        for (int i= 0;i<fg1.length;i++){
-          if (!Arrays.equals(fg1[i],g2[i])){
+        // Comprovam que ambdues llistes d'adjacencia siguin iguals
+        for (int i = 0; i < fg1.length; i++) {
+          if (!Arrays.equals(fg1[i], g2[i])) {
             return false;
           }
         }
         return true;
-      }else{  
-        //Seguim generant les permutacions per backtracking
+      } else {
+        // Seguim generant les permutacions per backtracking
         int aux;
-        for (int i = indx;i<perm.length;i++){
-          //Feim un swap
+        for (int i = indx; i < perm.length; i++) {
+          // Feim un swap
           aux = perm[indx];
-          perm[indx]=perm[i];
-          perm[i]=aux;
-          if(comprovarPermutacions(perm,indx+1,g1,g2)){
-            return true; //N'ha trobada una permutacio tal que f(g1) = g2
+          perm[indx] = perm[i];
+          perm[i] = aux;
+          if (comprovarPermutacions(perm, indx + 1, g1, g2)) {
+            return true; // N'ha trobada una permutacio tal que f(g1) = g2
           }
-          //Desfem el canvi
+          // Desfem el canvi
           aux = perm[indx];
-          perm[indx]=perm[i];
-          perm[i]=aux;
+          perm[indx] = perm[i];
+          perm[i] = aux;
         }
         return false;
       }
@@ -709,38 +719,38 @@ class Entrega {
     static int[] exercici3(int[][] g, int r) {
       boolean[] explorats = new boolean[g.length];
       List<Integer> postOrdre = new ArrayList<Integer>();
-      if(!exploreExercici3(g, r, r, explorats,postOrdre)){
-        return null; //El graf te cicles, no es un abre
-      }else{
-        //Comprovam que el graf sigui connex, tots els vertexos han de estar explorats
-        for (boolean explorat:explorats){
-          if(!explorat){
+      if (!exploreExercici3(g, r, r, explorats, postOrdre)) {
+        return null; // El graf te cicles, no es un abre
+      } else {
+        // Comprovam que el graf sigui connex, tots els vertexos han de estar explorats
+        for (boolean explorat : explorats) {
+          if (!explorat) {
             return null;
           }
-        } 
-        //Ficam els elements de la llista postOrdre dins un int[]
+        }
+        // Ficam els elements de la llista postOrdre dins un int[]
         int[] res = new int[g.length];
-        for (int i = 0;i<postOrdre.size();i++){
+        for (int i = 0; i < postOrdre.size(); i++) {
           res[i] = postOrdre.get(i);
         }
         return res;
       }
     }
 
-    static boolean exploreExercici3(int[][] g,int v,int anterior,boolean[]explorats,List<Integer> postordre){
-      if (explorats[v]){
-        return false; //Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
+    static boolean exploreExercici3(int[][] g, int v, int anterior, boolean[] explorats, List<Integer> postordre) {
+      if (explorats[v]) {
+        return false; // Ha trobat un cami a un graf ja explorat diferent a l'original, te un cicle
       }
-      explorats[v]=true;
-      for (int vNext : g[v]){
-        if (vNext!=anterior){
-          if(!exploreExercici3(g, vNext,v, explorats,postordre)){
-            return false; //Ha trobat un cicle en la seva recursivitat
+      explorats[v] = true;
+      for (int vNext : g[v]) {
+        if (vNext != anterior) {
+          if (!exploreExercici3(g, vNext, v, explorats, postordre)) {
+            return false; // Ha trobat un cicle en la seva recursivitat
           }
         }
       }
       postordre.add(v);
-      return true; //No te cicles
+      return true; // No te cicles
     }
 
     /*
@@ -768,44 +778,52 @@ class Entrega {
      * Si és impossible, retornau -1.
      */
     static int exercici4(char[][] mapa) {
-      boolean[][] explorat = new boolean[mapa.length][mapa[0].length]; //Feim un array de booleans que marcara si una casella ja ha estat explorada per no repetir la cerca
-      List<int[]> aExplorar = new ArrayList<int[]>(); //Empream una arraylist que emprarem com a cua per aplicar la cerca BFS
-      //cercam la posicio d'origen
+      boolean[][] explorat = new boolean[mapa.length][mapa[0].length]; // Feim un array de booleans que marcara si una
+                                                                       // casella ja ha estat explorada per no repetir
+                                                                       // la cerca
+      List<int[]> aExplorar = new ArrayList<int[]>(); // Empream una arraylist que emprarem com a cua per aplicar la
+                                                      // cerca BFS
       boolean trobat = false;
-      for (int fila = 0;!trobat && fila<mapa.length;fila++){
-        for(int columna = 0;!trobat && columna<mapa[0].length;columna++){
-          if (mapa[fila][columna]=='O'){
-            aExplorar.add(new int[]{fila,columna}); //Ficam l'origen, el primer node a explorar
+      // cercam la posicio d'origen
+      for (int fila = 0; !trobat && fila < mapa.length; fila++) {
+        for (int columna = 0; !trobat && columna < mapa[0].length; columna++) {
+          if (mapa[fila][columna] == 'O') {
+            aExplorar.add(new int[] { fila, columna }); // Ficam l'origen, el primer node a explorar
             explorat[fila][columna] = true;
-            trobat = true; //sortim del bucle
+            trobat = true; // sortim del bucle
           }
         }
       }
       int pases = 0;
-      while (!aExplorar.isEmpty()){
+      while (!aExplorar.isEmpty()) {
         int tam = aExplorar.size();
-        for (int i = 0;i<tam;i++){
-          int[]node = aExplorar.removeFirst(); //Feim el que seria un pop de una cua
-          if (mapa[node[0]][node[1]]=='D'){//Comprovam si trobam el desti
-            return pases; //Amb la cerca en amplada ens aseguram de que es troba amb el minim de pases
+        for (int i = 0; i < tam; i++) {
+          int[] node = aExplorar.removeFirst(); // Feim el que seria un pop de una cua
+          if (mapa[node[0]][node[1]] == 'D') {// Comprovam si trobam el desti
+            return pases; // Amb la cerca en amplada ens aseguram de que es troba amb el minim de pases
           }
 
-          //Ficam els adjacents, comprovam que no s'hagin explorat abans, no siguin '#' ni surtin del mapa
-          if (node[0]!=mapa.length-1 && !explorat[node[0]+1][node[1]] &&mapa[node[0]+1][node[1]]!='#'){ //Miram el de abaix
-            explorat[node[0]+1][node[1]] = true;
-            aExplorar.add(new int[]{node[0]+1,node[1]});
+          // Ficam els adjacents, comprovam que no s'hagin explorat abans, no siguin '#'
+          // ni surtin del mapa
+          if (node[0] != mapa.length - 1 && !explorat[node[0] + 1][node[1]] && mapa[node[0] + 1][node[1]] != '#') {
+            // Miram el de abaix
+            explorat[node[0] + 1][node[1]] = true;
+            aExplorar.add(new int[] { node[0] + 1, node[1] });
           }
-          if (node[0]!=0 && !explorat[node[0]-1][node[1]] && mapa[node[0]-1][node[1]]!='#'){ //Miram el de adalt
-            explorat[node[0]-1][node[1]] = true;
-            aExplorar.add(new int[]{node[0]-1,node[1]});
+          if (node[0] != 0 && !explorat[node[0] - 1][node[1]] && mapa[node[0] - 1][node[1]] != '#') {
+            // Miram el de adalt
+            explorat[node[0] - 1][node[1]] = true;
+            aExplorar.add(new int[] { node[0] - 1, node[1] });
           }
-          if (node[1]!=mapa[0].length-1 && !explorat[node[0]][node[1]+1] &&mapa[node[0]][node[1]+1]!='#'){ //Miram el de la dreta
-            explorat[node[0]][node[1]+1] = true;
-            aExplorar.add(new int[]{node[0],node[1]+1});
+          if (node[1] != mapa[0].length - 1 && !explorat[node[0]][node[1] + 1] && mapa[node[0]][node[1] + 1] != '#') {
+            // Miram el de la dreta
+            explorat[node[0]][node[1] + 1] = true;
+            aExplorar.add(new int[] { node[0], node[1] + 1 });
           }
-          if (node[1]!=0 && !explorat[node[0]][node[1]-1] &&mapa[node[0]][node[1]-1]!='#'){ //Miram el de la esquerra
-            explorat[node[0]][node[1]-1] = true;
-            aExplorar.add(new int[]{node[0],node[1]-1});
+          if (node[1] != 0 && !explorat[node[0]][node[1] - 1] && mapa[node[0]][node[1] - 1] != '#') {
+            // Miram el de la esquerra
+            explorat[node[0]][node[1] - 1] = true;
+            aExplorar.add(new int[] { node[0], node[1] - 1 });
           }
         }
         pases++;
